@@ -1,6 +1,6 @@
 # flowcamp
 
-flowcamp is an experimental Artificial Intelligence optimization project that represents many logistical and scheduling tasks at summer camp as Constraint Optimization Problems (COPs) to generate an AI solution. It utilizes the Pyomo framework for python. 
+flowcamp is an experimental Artificial Intelligence optimization project that represents many logistical and scheduling tasks at summer camp as Constraint Optimization Problems (COPs) to generate an AI solution. It utilizes the MiniZinc constraint modelling language and integrates into Python using the MiniZinc Python library. 
 
 # motivation 
 
@@ -15,3 +15,10 @@ This project is a candidate project for my undergraduate senior honors thesis an
 - Develop a flexible initial setup routine that allows broad one-time customization for various organizations 
 - Integrate a Large Language Model with named entity recognition to allow user feedback and user-added constraints to the solution. 
 - Bundle all programs into a streamlined GUI
+
+# installation 
+1. Visit the minizinc website https://www.minizinc.org/ and follow the installation guide to download and install the compiler. 
+2. Run ```console  
+pip install -r requirements.txt
+python day_off_minizinc_test.py
+```
