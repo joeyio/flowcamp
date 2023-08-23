@@ -17,8 +17,9 @@ This project is a candidate project for my undergraduate senior honors thesis an
 - Bundle all programs into a streamlined GUI
 
 # installation 
-1. Visit the minizinc website https://www.minizinc.org/ and follow the installation guide to download and install the compiler. 
-2. Run ```console  
+1. Visit the [minizinc website](https://www.minizinc.org/) and follow the installation guide to download and install the compiler. 
+2. Run the following commands:
+```console  
 pip install -r requirements.txt
 python day_off_minizinc_test.py
 ```
