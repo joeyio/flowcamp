@@ -12,15 +12,23 @@ sample_data = pd.DataFrame(data = {'person' : ['bob', 'sally', 'charlie', 'megan
                             'sub_department' : ['atv', 'art', 'stem', 'culinary', 'art', 'bikes', 'bikes', 'culinary', 'atv', 'stem'],
                             'first_choice' : ['SUN', 'TUE', 'FRI', 'THU', 'SUN', 'TUE', 'TUE', 'WED', 'FRI', 'TUE'],
                             'second_choice' : ['MON', 'SUN', 'SUN', 'TUE', 'WED', 'THU', 'SUN', 'FRI', 'SUN', 'WED'],
-                            'third_choice' : ['WED', 'THU', 'MON', 'FRI', 'TUE', 'MON', 'WED', 'THU', 'THU', 'SUN']}).reset_index(drop=True)
+                            'third_choice' : ['WED', 'THU', 'MON', 'FRI', 'TUE', 'MON', 'WED', 'THU', 'THU', 'SUN'],
+                            'same_day_as': [['sally'],['bob'],['alice', 'bob', 'zach'],['mark', 'alice'],['kristen', 'megan', 'sally'],['john'],['john', 'mark'],['alice', 'rich'],['charlie'],['john']],
+                            'strong_pref_ppl' : [1,0,1,1,0,0,1,0,1,1]
+                            }).reset_index(drop=True)
 
 print(sample_data)
 
 preference_data = sample_data
 
-# pivoted table to day preferences
+# intermediate processing steps
+
+# day preferences
 pref_table = preference_data[['first_choice', 'second_choice', 'third_choice']].to_numpy()
-print(pref_table)
+
+# preferences to have the same day off with others
+length_vector = preference_data['same_day_as'].str.len()
+print(length_vector)
 
 # initialize the minizinc model from file
 model = mzn.Model("day_off_python.mzn")
@@ -30,9 +38,13 @@ instance = mzn.Instance(mzn.Solver.lookup("gecode"), model)
 instance["DAYS"] = Enum("Days", list(vd))
 instance["People"] = Enum("People", (preference_data['person']).tolist())
 instance["preferences"] = pref_table
+instance["dept"] = Enum("dept", preference_data['sub_department'].unique().tolist())
+instance["dept_list"] = preference_data['sub_department'].tolist()
 
 # show results
 result = instance.solve()
+print(result)
+
 print(result.solution.assignment)
 
 result_table = pd.DataFrame({'name' : preference_data.person, 
