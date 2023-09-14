@@ -1,10 +1,15 @@
 % parameters
 enum DAYS; 
-enum People::add_to_output; 
+enum People; 
 enum dept;
 set of int: Choices = 1..3;
 array[People, Choices] of DAYS: preferences; 
 array[People] of dept: dept_list;
+int: max_same_day_as;
+set of int: same_day_set = 1..max_same_day_as;
+array[People, same_day_set] of People: same_day_as_array;
+array[People] of int: strong_pref_ppl;
+
 % int Score = 0;
 
 % variables
@@ -20,6 +25,9 @@ include "alldifferent.mzn";
 constraint forall (q, r in People where dept_list[q] == dept_list[r] /\ q != r) (assignment[q] != assignment[r]);
 
 % objective
-solve maximize product (p in People) ((assignment[p] == preferences[p, 1])*3 + (assignment[p] == preferences[p, 2])*2 + (assignment[p] == preferences[p, 3])*1)
+var int: pref_score = sum (p in People) (((assignment[p] == preferences[p, 1])*3 + (assignment[p] == preferences[p, 2])*2 + (assignment[p] == preferences[p, 3])*1) + (1 - strong_pref_ppl[p]) );
+var int: ppl_score = sum (p in People, n in same_day_set) ((if p != same_day_as_array[p, n] then 2*(assignment[p] == assignment[same_day_as_array[p, n]]) else 1 endif) + (strong_pref_ppl[p]) );
+
+solve maximize pref_score + ppl_score;
 
 %output ["\(p\)     \(assignment[p]\)" | p in People];
