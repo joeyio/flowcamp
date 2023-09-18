@@ -1,5 +1,6 @@
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
+import pandas as pd
 import day_off_solver as dos
 
 def run_day_off_solver():

@@ -10,7 +10,7 @@ def load_sample_data():
     # load valid days
     with open('./sample_data/valid_days.data') as file:
         lines = [line.rstrip() for line in file]
-    return sample_data, lines
+    return lines, sample_data
 
 # intermediate processing steps for the day off optimizer
 def intermediate_processing(data: pd.DataFrame):
