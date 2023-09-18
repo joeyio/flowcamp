@@ -23,5 +23,5 @@ This project is a candidate project for my undergraduate senior honors thesis an
 pip install -r requirements.txt
 ```
 ```console
-python day_off_minizinc_test.py
+python start.py
 ```
