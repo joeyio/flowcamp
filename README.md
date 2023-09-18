@@ -21,5 +21,7 @@ This project is a candidate project for my undergraduate senior honors thesis an
 2. Run the following commands:
 ```console  
 pip install -r requirements.txt
+```
+```console
 python day_off_minizinc_test.py
 ```
