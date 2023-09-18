@@ -1,18 +1,16 @@
 import minizinc as mzn
 import pandas as pd
 import numpy as np
-import itertools
 from enum import Enum
 
-# loads parameters from a text (.txt or .data) file where each item is on a separate line into a list
-def load_parameters(filename: str):
-    with open(filename) as file:
-        lines = [line.rstrip() for line in file]
-    return lines
-
-# load sample data
+# load sample data from file
 def load_sample_data():
-    return pd.read_json('sample_data.json')
+    # load preference data
+    sample_data = pd.read_json('./sample_data/sample_data.json')
+    # load valid days
+    with open('./sample_data/valid_days.data') as file:
+        lines = [line.rstrip() for line in file]
+    return sample_data, lines
 
 # intermediate processing steps for the day off optimizer
 def intermediate_processing(data: pd.DataFrame):
@@ -54,17 +52,13 @@ def show_results(instance: mzn.Instance, data: pd.DataFrame):
     result_table = pd.DataFrame({'name' : data.person, 
                                 'assignment' : result.solution.assignment})
     print(result_table)
+    return result_table
 
-def main():
-    vd = set(load_parameters('valid_days.data'))
-    preference_data = load_sample_data()
+def day_off_solver(vd: list, preference_data: pd.DataFrame):
     intermediate_data = intermediate_processing(preference_data)
     print(preference_data)
 
     instance = initialize_model('day_off_python.mzn')
     populate_model(instance, preference_data, intermediate_data, vd)
-    show_results(instance, preference_data)
-
-if __name__ == '__main__':
-    main()
+    return show_results(instance, preference_data)
 
