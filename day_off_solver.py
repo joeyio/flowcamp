@@ -35,10 +35,10 @@ def initialize_model(filename: str):
 
 # load data into the instance
 def populate_model(instance: mzn.Instance, data: pd.DataFrame, intermediate_data: tuple, config_params: set):
-    instance["DAYS"] = Enum("Days", list(config_params))
+    instance["DAYS"] = list(config_params)
     instance["People"] = data['person'].tolist()
     instance["preferences"] = intermediate_data[0]
-    instance["dept"] = Enum("dept", data['sub_department'].unique().tolist())
+    instance["dept"] = data['sub_department'].unique().tolist()
     instance["dept_list"] = data['sub_department'].tolist()
     instance["max_same_day_as"] = intermediate_data[2]
     instance["same_day_as_array"] = intermediate_data[1].to_numpy()
@@ -47,11 +47,12 @@ def populate_model(instance: mzn.Instance, data: pd.DataFrame, intermediate_data
 # show results
 def show_results(instance: mzn.Instance, data: pd.DataFrame):
     result = instance.solve()
-    print(result)
-    print(result.solution.assignment)
+    print("\n")
+    
     result_table = pd.DataFrame({'name' : data.person, 
                                 'assignment' : result.solution.assignment})
     print(result_table)
+    print("\nscore: %s" %result.solution.objective)
     return result_table
 
 def day_off_solver(vd: list, preference_data: pd.DataFrame):
