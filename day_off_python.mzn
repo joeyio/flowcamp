@@ -21,6 +21,9 @@ array[People] of var DAYS: assignment::add_to_output;
 include "alldifferent.mzn";
 % constraint alldifferent(assignment);
 
+% TODO: add global constraint that no more people can take the same day off in the small class dept than there are subs
+
+% TODO: modify this constraint to specify maximum numbers of people in a sub department that can take a day off at the same time, instead of a hard coded 1
 % no more than 1 person in a sub dept can take the same day off
 constraint forall (q, r in People where dept_list[q] == dept_list[r] /\ q != r) (assignment[q] != assignment[r]);
 
