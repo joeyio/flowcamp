@@ -15,8 +15,9 @@ def run_day_off_solver():
         solver.load_sample_data()
         solver.solve()
 
-        solver.addconstraint("constraint assignment['bob'] = MON")
-        # solver.solve_branch
+        solver.addconstraint_day('bob','TUE',False)
+        solver.addconstraint_group(['charlie','megan','rich'], False)
+        solver.addconstraint_run()
 
 def main():
     print('flowcamp alpha version 0.1 \n')

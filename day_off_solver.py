@@ -9,7 +9,7 @@ class day_off_instance:
         self.vd = None
         self.intermediate_data = None
         self.instance = None
-        self.branch = None
+        self.branchconstraints = []
         self.result = None
     
     # load sample data from file
@@ -53,16 +53,43 @@ class day_off_instance:
         self.instance["strong_pref_ppl"] = self.data['strong_pref_ppl'].to_numpy()
 
     # add constraints during runtime
-    def addconstraint(self, constraint: str):
-        with self.instance.branch() as self.child:
-            self.child.add_string(constraint)
-            self.show_results(self.child)
+    def addconstraint_run(self):
+        with self.instance.branch() as child:
+            for constraint in self.branchconstraints:
+                child.add_string(constraint[0])
+            self.show_results(child)
             # TODO: additional constraints need to be cached in a buffer, then loaded simultaneously into a branch
 
     # def solve_branch(self):
-        
-    # enforce a specific day for an individual (and specify NOT)
+
+    # enforce a specific day for an individual (or specify NOT)
+    def addconstraint_day(self, person: str, day: str, positive: bool):
+        # ensure the person and day are valid
+        if person in self.data['person'].to_list() and day in self.vd:
+            # the require case
+            if positive:
+                self.branchconstraints.append((f'constraint assignment[{person}] = {day};\n', '{person} must have {day}'))
+                print(self.branchconstraints[0][0])
+            # the prohibit case
+            else:
+                self.branchconstraints.append((f'constraint assignment[{person}] != {day};\n', '{person} cannot have {day}'))
+        else: 
+            print("that combination is invalid. please try again")
+         
     # enforce given individuals to have the same day as each other (and specify different)
+    def addconstraint_group(self, people: list, positive: bool):
+        length = len(people)
+        # ensure the people exist
+        if set(people).issubset(self.data['person']) and length > 1:
+            people_str = '[%s]' % ', '.join(map(str, people))
+            # the same day case
+            if positive:
+                self.branchconstraints.append((f'array[1..{length}] of People: branch_people = {people_str};\nconstraint forall(b, c in branch_people) (assignment[b] = assignment[c]);\n',
+                                               '{people_str} all have the same day'))
+                print(self.branchconstraints[0][0])
+            else:
+                self.branchconstraints.append((f'array[1..{length}] of People: branch_people = {people_str};\nconstraint forall(b, c in branch_people where b != c) (assignment[b] != assignment[c]);\n',
+                                               '{people_str} all have different days'))
 
 
     # show results
