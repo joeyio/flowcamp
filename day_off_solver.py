@@ -68,11 +68,10 @@ class day_off_instance:
         if person in self.data['person'].to_list() and day in self.vd:
             # the require case
             if positive:
-                self.branchconstraints.append((f'constraint assignment[{person}] = {day};\n', '{person} must have {day}'))
-                print(self.branchconstraints[0][0])
+                self.branchconstraints.append((f'constraint assignment[{person}] = {day};\n', f'{person} must have {day}'))
             # the prohibit case
             else:
-                self.branchconstraints.append((f'constraint assignment[{person}] != {day};\n', '{person} cannot have {day}'))
+                self.branchconstraints.append((f'constraint assignment[{person}] != {day};\n', f'{person} cannot have {day}'))
         else: 
             print("that combination is invalid. please try again")
          
@@ -81,15 +80,16 @@ class day_off_instance:
         length = len(people)
         # ensure the people exist
         if set(people).issubset(self.data['person']) and length > 1:
-            people_str = '[%s]' % ', '.join(map(str, people))
+            people_str = '%s' % ', '.join(map(str, people))
             # the same day case
             if positive:
-                self.branchconstraints.append((f'array[1..{length}] of People: branch_people = {people_str};\nconstraint forall(b, c in branch_people) (assignment[b] = assignment[c]);\n',
-                                               '{people_str} all have the same day'))
-                print(self.branchconstraints[0][0])
+                self.branchconstraints.append((f'array[1..{length}] of People: branch_people = [{people_str}];\nconstraint forall(b, c in branch_people) (assignment[b] = assignment[c]);\n',
+                                               f'{people_str} all have the same day'))
             else:
-                self.branchconstraints.append((f'array[1..{length}] of People: branch_people = {people_str};\nconstraint forall(b, c in branch_people where b != c) (assignment[b] != assignment[c]);\n',
-                                               '{people_str} all have different days'))
+                self.branchconstraints.append((f'array[1..{length}] of People: branch_people = [{people_str}];\nconstraint forall(b, c in branch_people where b != c) (assignment[b] != assignment[c]);\n',
+                                               f'{people_str} have different days'))
+        else:
+            print("one or more of the individuals your requested doesn't exist.")
 
 
     # show results
@@ -97,12 +97,15 @@ class day_off_instance:
         result = instance.solve()
         print("\n")
         
-        result_table = pd.DataFrame({'name' : self.data.person, 
-                                    'assignment' : result.solution.assignment})
-        print(result_table)
-        print("\nscore: %s" %result.solution.objective)
+        if result is not None:
+            result_table = pd.DataFrame({'name' : self.data.person, 
+                                        'assignment' : result.solution.assignment})
+            print(result_table)
+            print("\nscore: %s" %result.solution.objective)
 
-        self.result = result_table
+            self.result = result_table
+        else:
+            "sorry, we couldn't find a solution."
         
 
     def solve(self):
