@@ -11,8 +11,13 @@ def run_day_off_solver():
     ).execute()
 
     if fetch_data == 'load sample data':
-        vd, preference_data = dos.load_sample_data()
-        results = dos.day_off_solver(vd, preference_data)
+        solver = dos.day_off_instance()
+        solver.load_sample_data()
+        solver.solve()
+
+        solver.addconstraint_day('bob','TUE',False)
+        solver.addconstraint_group(['charlie','megan','rich'], False)
+        solver.addconstraint_run()
 
 def main():
     print('flowcamp alpha version 0.1 \n')
